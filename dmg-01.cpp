@@ -82,7 +82,7 @@ struct Registers {
 
 enum struct InstructionEnum : u8 {
     ADD, ADDHL, ADDC, SUB, SBC, AND, OR, XOR, CP, INC, DEC, CCF, SCF, RRA, RLA, RRCA, RRLA, CPL, BIT,
-    RESET, SET, SRL, RR, RL, RRC, RLC, SRA,
+    RESET, SET, SRL, RR, RL, RRC, RLC, SRA, SLA,
 };
 
 enum struct ArithmeticTarget : u8 {
@@ -129,6 +129,7 @@ struct RL : Instruction { RL() : Instruction(InstructionEnum::RL) {} };
 struct RRC : Instruction { RRC() : Instruction(InstructionEnum::RRC) {} };
 struct RLC : Instruction { RLC() : Instruction(InstructionEnum::RLC) {} };
 struct SRA : Instruction { SRA() : Instruction(InstructionEnum::SRA) {} };
+struct SLA : Instruction { SLA() : Instruction(InstructionEnum::SLA) {} };
 
 struct CPU {
     Registers registers;
@@ -162,6 +163,7 @@ struct CPU {
     u8 rrc(u8 value);
     u8 rlc(u8 value);
     u8 sra(u8 value);
+    u8 sla(u8 value);
 };
 
 u8 CPU::add(u8 value) {
@@ -487,6 +489,21 @@ u8 CPU::sra(u8 value) {
     registers.AF.flags.zero = res == 0;
     registers.AF.flags.subtract = res < 0;
     registers.AF.flags.carry = original_least_significant;
+    registers.AF.flags.half_carry = 0;
+
+    return res;
+}
+
+u8 CPU::sla(u8 value) {
+    auto reg_bitset = std::bitset<8>(value);
+    auto original_most_significant = reg_bitset[0];
+
+    auto shifted_reg = std::bitset<8>(value << 1);
+    auto res = static_cast<u8>(shifted_reg.to_ulong());
+
+    registers.AF.flags.zero = res == 0;
+    registers.AF.flags.subtract = res < 0;
+    registers.AF.flags.carry = original_most_significant;
     registers.AF.flags.half_carry = 0;
 
     return res;
@@ -2147,6 +2164,48 @@ void CPU::execute(Instruction instruction) {
         case ArithmeticTarget::L: {
             auto value = registers.HL.second;
             registers.HL.second = sra(value);
+        }
+                                break;
+        }
+        __assume(false);
+    }
+    break;
+    case InstructionEnum::SLA:
+    {
+        switch (instruction.target) {
+        case ArithmeticTarget::A: {
+            auto value = registers.AF.first;
+            registers.AF.first = sla(value);
+        }
+                                break;
+        case ArithmeticTarget::B: {
+            auto value = registers.BC.first;
+            registers.BC.first = sla(value);
+        }
+                                break;
+        case ArithmeticTarget::C: {
+            auto value = registers.BC.second;
+            registers.BC.second = sla(value);
+        }
+                                break;
+        case ArithmeticTarget::D: {
+            auto value = registers.DE.first;
+            registers.DE.first = sla(value);
+        }
+                                break;
+        case ArithmeticTarget::E: {
+            auto value = registers.DE.second;
+            registers.DE.second = sla(value);
+        }
+                                break;
+        case ArithmeticTarget::H: {
+            auto value = registers.HL.first;
+            registers.HL.first = sla(value);
+        }
+                                break;
+        case ArithmeticTarget::L: {
+            auto value = registers.HL.second;
+            registers.HL.second = sla(value);
         }
                                 break;
         }
