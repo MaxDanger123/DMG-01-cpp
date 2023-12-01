@@ -2161,5 +2161,5 @@ void CPU::execute(Instruction instruction) {
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    std::cout << "Hello DMG-01!\n";
 }
