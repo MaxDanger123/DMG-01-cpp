@@ -82,7 +82,7 @@ struct Registers {
 
 enum struct InstructionEnum : u8 {
     ADD, ADDHL, ADDC, SUB, SBC, AND, OR, XOR, CP, INC, DEC, CCF, SCF, RRA, RLA, RRCA, RRLA, CPL, BIT,
-    RESET, SET, SRL, RR, RL, RRC, RLC, SRA, SLA,
+    RESET, SET, SRL, RR, RL, RRC, RLC, SRA, SLA, SWAP,
 };
 
 enum struct ArithmeticTarget : u8 {
@@ -130,6 +130,7 @@ struct RRC : Instruction { RRC() : Instruction(InstructionEnum::RRC) {} };
 struct RLC : Instruction { RLC() : Instruction(InstructionEnum::RLC) {} };
 struct SRA : Instruction { SRA() : Instruction(InstructionEnum::SRA) {} };
 struct SLA : Instruction { SLA() : Instruction(InstructionEnum::SLA) {} };
+struct SWAP : Instruction { SWAP() : Instruction(InstructionEnum::SWAP) {} };
 
 struct CPU {
     Registers registers;
@@ -164,6 +165,7 @@ struct CPU {
     u8 rlc(u8 value);
     u8 sra(u8 value);
     u8 sla(u8 value);
+    u8 swap(u8 reg);
 };
 
 u8 CPU::add(u8 value) {
@@ -504,6 +506,19 @@ u8 CPU::sla(u8 value) {
     registers.AF.flags.zero = res == 0;
     registers.AF.flags.subtract = res < 0;
     registers.AF.flags.carry = original_most_significant;
+    registers.AF.flags.half_carry = 0;
+
+    return res;
+}
+
+u8 CPU::swap(u8 reg) {
+    auto upper = ((reg & 0xf0) >> 4);
+    auto lower = (reg & 0x0f);
+    auto res = lower | upper; //TODO(Andrea): is it even working?
+
+    registers.AF.flags.zero = res == 0;
+    registers.AF.flags.subtract = false;
+    registers.AF.flags.carry = 0; //TODO(Andrea): is it correct?
     registers.AF.flags.half_carry = 0;
 
     return res;
