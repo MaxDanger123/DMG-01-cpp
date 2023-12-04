@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <bitset>
 #include <bit>
+#include <array>
 #include "SafeInt.hpp"
 
 using u8 = uint8_t;
@@ -132,8 +133,18 @@ struct SRA : Instruction { SRA() : Instruction(InstructionEnum::SRA) {} };
 struct SLA : Instruction { SLA() : Instruction(InstructionEnum::SLA) {} };
 struct SWAP : Instruction { SWAP() : Instruction(InstructionEnum::SWAP) {} };
 
+struct MemoryBus {
+    std::array<u8, 0xFFFF> memory;
+
+    u8 read_byte(u8 address) {
+        return memory[address];
+    }
+};
+
 struct CPU {
     Registers registers;
+    u16 pc;
+    MemoryBus bus;
 
     void execute(Instruction instruction);
 
