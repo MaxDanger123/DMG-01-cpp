@@ -2227,6 +2227,48 @@ void CPU::execute(Instruction instruction) {
         __assume(false);
     }
     break;
+    case InstructionEnum::SWAP:
+    {
+        switch (instruction.target) {
+        case ArithmeticTarget::A: {
+            auto value = registers.AF.first;
+            registers.AF.first = swap(value);
+        }
+                                break;
+        case ArithmeticTarget::B: {
+            auto value = registers.BC.first;
+            registers.BC.first = swap(value);
+        }
+                                break;
+        case ArithmeticTarget::C: {
+            auto value = registers.BC.second;
+            registers.BC.second = swap(value);
+        }
+                                break;
+        case ArithmeticTarget::D: {
+            auto value = registers.DE.first;
+            registers.DE.first = swap(value);
+        }
+                                break;
+        case ArithmeticTarget::E: {
+            auto value = registers.DE.second;
+            registers.DE.second = swap(value);
+        }
+                                break;
+        case ArithmeticTarget::H: {
+            auto value = registers.HL.first;
+            registers.HL.first = swap(value);
+        }
+                                break;
+        case ArithmeticTarget::L: {
+            auto value = registers.HL.second;
+            registers.HL.second = swap(value);
+        }
+                                break;
+        }
+        __assume(false);
+    }
+    break;
     }
 
     //assert(false);
