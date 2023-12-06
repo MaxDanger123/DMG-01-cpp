@@ -3,6 +3,7 @@
 #include <bitset>
 #include <bit>
 #include <array>
+#include <optional>
 #include "SafeInt.hpp"
 
 using u8 = uint8_t;
@@ -101,6 +102,8 @@ struct Instruction {
     RegisterBit bit;
 
     Instruction(InstructionEnum inst_enum) : inst_enum(inst_enum) {}
+
+    static std::optional<Instruction> from_byte(u8 byte);
 };
 
 struct ADD : Instruction { ADD() : Instruction(InstructionEnum::ADD) {} };
@@ -147,6 +150,7 @@ struct CPU {
     MemoryBus bus;
 
     void execute(Instruction instruction);
+    void step();
 
     u8 add(u8 value);
     u16 addhl(u16 value);
@@ -2284,6 +2288,25 @@ void CPU::execute(Instruction instruction) {
 
     //assert(false);
     __assume(false); //msvc, clang-cl
+}
+
+void CPU::step() {
+    auto instruction_byte = bus.read_byte(pc);
+    
+    std::optional<Instruction> instruction = Instruction::from_byte(instruction_byte);
+    if (instruction) {
+        pc = execute(*instruction);
+    }
+    else {
+        std::cerr << "Unknown instruction found for: 0x" << std::hex << instruction_byte << "\n";
+        exit(-1);
+    }
+}
+
+static std::optional<Instruction> from_byte(u8 byte) {
+    switch (byte) {
+        
+    }
 }
 
 int main()
