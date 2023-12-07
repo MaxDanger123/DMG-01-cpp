@@ -101,40 +101,40 @@ struct Instruction {
     ArithmeticTarget target;
     RegisterBit bit;
 
-    Instruction(InstructionEnum inst_enum) : inst_enum(inst_enum) {}
+    Instruction(InstructionEnum inst_enum, ArithmeticTarget target) : inst_enum(inst_enum), target(target) {}
 
     static std::optional<Instruction> from_byte(u8 byte);
 };
 
-struct ADD : Instruction { ADD() : Instruction(InstructionEnum::ADD) {} };
-struct ADDHL : Instruction { ADDHL() : Instruction(InstructionEnum::ADDHL) {} };
-struct ADDC : Instruction { ADDC() : Instruction(InstructionEnum::ADDC) {} };
-struct SUB : Instruction { SUB() : Instruction(InstructionEnum::SUB) {} };
-struct SBC : Instruction { SBC() : Instruction(InstructionEnum::SBC) {} };
-struct AND : Instruction { AND() : Instruction(InstructionEnum::AND) {} };
-struct OR : Instruction { OR() : Instruction(InstructionEnum::OR) {} };
-struct XOR : Instruction { XOR() : Instruction(InstructionEnum::XOR) {} };
-struct CP : Instruction { CP() : Instruction(InstructionEnum::CP) {} };
-struct INC : Instruction { INC() : Instruction(InstructionEnum::INC) {} };
-struct DEC : Instruction { DEC() : Instruction(InstructionEnum::DEC) {} };
-struct CCF : Instruction { CCF() : Instruction(InstructionEnum::CCF) {} };
-struct SCF : Instruction { SCF() : Instruction(InstructionEnum::SCF) {} };
-struct RRA : Instruction { RRA() : Instruction(InstructionEnum::RRA) {} };
-struct RLA : Instruction { RLA() : Instruction(InstructionEnum::RLA) {} };
-struct RRCA : Instruction { RRCA() : Instruction(InstructionEnum::RRCA) {} };
-struct RRLA : Instruction { RRLA() : Instruction(InstructionEnum::RRLA) {} };
-struct CPL : Instruction { CPL() : Instruction(InstructionEnum::CPL) {} };
-struct BIT : Instruction { BIT() : Instruction(InstructionEnum::BIT) {} };
-struct RESET : Instruction { RESET() : Instruction(InstructionEnum::RESET) {} };
-struct SET : Instruction { SET() : Instruction(InstructionEnum::SET) {} };
-struct SRL : Instruction { SRL() : Instruction(InstructionEnum::SRL) {} };
-struct RR : Instruction { RR() : Instruction(InstructionEnum::RR) {} };
-struct RL : Instruction { RL() : Instruction(InstructionEnum::RL) {} };
-struct RRC : Instruction { RRC() : Instruction(InstructionEnum::RRC) {} };
-struct RLC : Instruction { RLC() : Instruction(InstructionEnum::RLC) {} };
-struct SRA : Instruction { SRA() : Instruction(InstructionEnum::SRA) {} };
-struct SLA : Instruction { SLA() : Instruction(InstructionEnum::SLA) {} };
-struct SWAP : Instruction { SWAP() : Instruction(InstructionEnum::SWAP) {} };
+struct ADD : Instruction { ADD(ArithmeticTarget target) : Instruction(InstructionEnum::ADD, target) {} };
+struct ADDHL : Instruction { ADDHL(ArithmeticTarget target) : Instruction(InstructionEnum::ADDHL, target) {} };
+struct ADDC : Instruction { ADDC(ArithmeticTarget target) : Instruction(InstructionEnum::ADDC, target) {} };
+struct SUB : Instruction { SUB(ArithmeticTarget target) : Instruction(InstructionEnum::SUB, target) {} };
+struct SBC : Instruction { SBC(ArithmeticTarget target) : Instruction(InstructionEnum::SBC, target) {} };
+struct AND : Instruction { AND(ArithmeticTarget target) : Instruction(InstructionEnum::AND, target) {} };
+struct OR : Instruction { OR(ArithmeticTarget target) : Instruction(InstructionEnum::OR, target) {} };
+struct XOR : Instruction { XOR(ArithmeticTarget target) : Instruction(InstructionEnum::XOR, target) {} };
+struct CP : Instruction { CP(ArithmeticTarget target) : Instruction(InstructionEnum::CP, target) {} };
+struct INC : Instruction { INC(ArithmeticTarget target) : Instruction(InstructionEnum::INC, target) {} };
+struct DEC : Instruction { DEC(ArithmeticTarget target) : Instruction(InstructionEnum::DEC, target) {} };
+struct CCF : Instruction { CCF(ArithmeticTarget target) : Instruction(InstructionEnum::CCF, target) {} };
+struct SCF : Instruction { SCF(ArithmeticTarget target) : Instruction(InstructionEnum::SCF, target) {} };
+struct RRA : Instruction { RRA(ArithmeticTarget target) : Instruction(InstructionEnum::RRA, target) {} };
+struct RLA : Instruction { RLA(ArithmeticTarget target) : Instruction(InstructionEnum::RLA, target) {} };
+struct RRCA : Instruction { RRCA(ArithmeticTarget target) : Instruction(InstructionEnum::RRCA, target) {} };
+struct RRLA : Instruction { RRLA(ArithmeticTarget target) : Instruction(InstructionEnum::RRLA, target) {} };
+struct CPL : Instruction { CPL(ArithmeticTarget target) : Instruction(InstructionEnum::CPL, target) {} };
+struct BIT : Instruction { BIT(ArithmeticTarget target) : Instruction(InstructionEnum::BIT, target) {} };
+struct RESET : Instruction { RESET(ArithmeticTarget target) : Instruction(InstructionEnum::RESET, target) {} };
+struct SET : Instruction { SET(ArithmeticTarget target) : Instruction(InstructionEnum::SET, target) {} };
+struct SRL : Instruction { SRL(ArithmeticTarget target) : Instruction(InstructionEnum::SRL, target) {} };
+struct RR : Instruction { RR(ArithmeticTarget target) : Instruction(InstructionEnum::RR, target) {} };
+struct RL : Instruction { RL(ArithmeticTarget target) : Instruction(InstructionEnum::RL, target) {} };
+struct RRC : Instruction { RRC(ArithmeticTarget target) : Instruction(InstructionEnum::RRC, target) {} };
+struct RLC : Instruction { RLC(ArithmeticTarget target) : Instruction(InstructionEnum::RLC, target) {} };
+struct SRA : Instruction { SRA(ArithmeticTarget target) : Instruction(InstructionEnum::SRA, target) {} };
+struct SLA : Instruction { SLA(ArithmeticTarget target) : Instruction(InstructionEnum::SLA, target) {} };
+struct SWAP : Instruction { SWAP(ArithmeticTarget target) : Instruction(InstructionEnum::SWAP, target) {} };
 
 struct MemoryBus {
     std::array<u8, 0xFFFF> memory;
@@ -149,7 +149,7 @@ struct CPU {
     u16 pc;
     MemoryBus bus;
 
-    void execute(Instruction instruction);
+    u16 execute(Instruction instruction);
     void step();
 
     u8 add(u8 value);
@@ -539,7 +539,7 @@ u8 CPU::swap(u8 reg) {
     return res;
 }
 
-void CPU::execute(Instruction instruction) {
+u16 CPU::execute(Instruction instruction) {
     switch (instruction.inst_enum)
     {
     case InstructionEnum::ADD:
@@ -2284,6 +2284,8 @@ void CPU::execute(Instruction instruction) {
         __assume(false);
     }
     break;
+
+    return pc += 1;
     }
 
     //assert(false);
@@ -2303,10 +2305,25 @@ void CPU::step() {
     }
 }
 
-static std::optional<Instruction> from_byte(u8 byte) {
+std::optional<Instruction> Instruction::from_byte(u8 byte) {
     switch (byte) {
-        
+    case 0x8F:
+        return ADD(ArithmeticTarget::A);
+    case 0x88:
+        return ADD(ArithmeticTarget::B);
+    case 0x89:
+        return ADD(ArithmeticTarget::C);
+    case 0x8A:
+        return ADD(ArithmeticTarget::D);
+    case 0x8B:
+        return ADD(ArithmeticTarget::E);
+    case 0x8C:
+        return ADD(ArithmeticTarget::H);
+    case 0x8D:
+        return ADD(ArithmeticTarget::L);
     }
+
+    return std::nullopt;
 }
 
 int main()
