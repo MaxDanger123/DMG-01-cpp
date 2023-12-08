@@ -108,7 +108,7 @@ struct Instruction {
 
 struct ADD : Instruction { ADD(ArithmeticTarget target) : Instruction(InstructionEnum::ADD, target) {} };
 struct ADDHL : Instruction { ADDHL(ArithmeticTarget target) : Instruction(InstructionEnum::ADDHL, target) {} };
-struct ADDC : Instruction { ADDC(ArithmeticTarget target) : Instruction(InstructionEnum::ADDC, target) {} };
+struct ADC : Instruction { ADC(ArithmeticTarget target) : Instruction(InstructionEnum::ADDC, target) {} };
 struct SUB : Instruction { SUB(ArithmeticTarget target) : Instruction(InstructionEnum::SUB, target) {} };
 struct SBC : Instruction { SBC(ArithmeticTarget target) : Instruction(InstructionEnum::SBC, target) {} };
 struct AND : Instruction { AND(ArithmeticTarget target) : Instruction(InstructionEnum::AND, target) {} };
@@ -2321,6 +2321,51 @@ std::optional<Instruction> Instruction::from_byte(u8 byte) {
         return ADD(ArithmeticTarget::H);
     case 0x85:
         return ADD(ArithmeticTarget::L);
+
+    case 0x8F:
+        return ADC(ArithmeticTarget::A);
+    case 0x88:
+        return ADC(ArithmeticTarget::B);
+    case 0x89:
+        return ADC(ArithmeticTarget::C);
+    case 0x8A:
+        return ADC(ArithmeticTarget::D);
+    case 0x8B:
+        return ADC(ArithmeticTarget::E);
+    case 0x8C:
+        return ADC(ArithmeticTarget::H);
+    case 0x8D:
+        return ADC(ArithmeticTarget::L);
+
+    case 0x97:
+        return SUB(ArithmeticTarget::A);
+    case 0x90:
+        return SUB(ArithmeticTarget::B);
+    case 0x91:
+        return SUB(ArithmeticTarget::C);
+    case 0x92:
+        return SUB(ArithmeticTarget::D);
+    case 0x93:
+        return SUB(ArithmeticTarget::E);
+    case 0x94:
+        return SUB(ArithmeticTarget::H);
+    case 0x95:
+        return SUB(ArithmeticTarget::L);
+
+    case 0x9F:
+        return SBC(ArithmeticTarget::A);
+    case 0x98:
+        return SBC(ArithmeticTarget::B);
+    case 0x99:
+        return SBC(ArithmeticTarget::C);
+    case 0x9A:
+        return SBC(ArithmeticTarget::D);
+    case 0x9B:
+        return SBC(ArithmeticTarget::E);
+    case 0x9C:
+        return SBC(ArithmeticTarget::H);
+    case 0x9D:
+        return SBC(ArithmeticTarget::L);
     }
 
     return std::nullopt;
