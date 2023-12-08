@@ -2307,19 +2307,19 @@ void CPU::step() {
 
 std::optional<Instruction> Instruction::from_byte(u8 byte) {
     switch (byte) {
-    case 0x8F:
+    case 0x87:
         return ADD(ArithmeticTarget::A);
-    case 0x88:
+    case 0x80:
         return ADD(ArithmeticTarget::B);
-    case 0x89:
+    case 0x81:
         return ADD(ArithmeticTarget::C);
-    case 0x8A:
+    case 0x82:
         return ADD(ArithmeticTarget::D);
-    case 0x8B:
+    case 0x83:
         return ADD(ArithmeticTarget::E);
-    case 0x8C:
+    case 0x84:
         return ADD(ArithmeticTarget::H);
-    case 0x8D:
+    case 0x85:
         return ADD(ArithmeticTarget::L);
     }
 
