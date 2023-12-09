@@ -2366,6 +2366,21 @@ std::optional<Instruction> Instruction::from_byte(u8 byte) {
         return SBC(ArithmeticTarget::H);
     case 0x9D:
         return SBC(ArithmeticTarget::L);
+    
+    case 0xA7:
+        return AND(ArithmeticTarget::A);
+    case 0xA0:
+        return AND(ArithmeticTarget::B);
+    case 0xA1:
+        return AND(ArithmeticTarget::C);
+    case 0xA2:
+        return AND(ArithmeticTarget::D);
+    case 0xA3:
+        return AND(ArithmeticTarget::E);
+    case 0xA4:
+        return AND(ArithmeticTarget::H);
+    case 0xA5:
+        return AND(ArithmeticTarget::L);
     }
 
     return std::nullopt;
