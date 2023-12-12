@@ -101,7 +101,9 @@ struct Instruction {
     ArithmeticTarget target;
     RegisterBit bit;
 
+    Instruction(InstructionEnum inst_enum) : inst_enum(inst_enum) {}
     Instruction(InstructionEnum inst_enum, ArithmeticTarget target) : inst_enum(inst_enum), target(target) {}
+    Instruction(InstructionEnum inst_enum, ArithmeticTarget target, RegisterBit bit) : inst_enum(inst_enum), target(target), bit(bit) {}
 
     static std::optional<Instruction> from_byte(u8 byte);
 };
@@ -117,16 +119,16 @@ struct XOR : Instruction { XOR(ArithmeticTarget target) : Instruction(Instructio
 struct CP : Instruction { CP(ArithmeticTarget target) : Instruction(InstructionEnum::CP, target) {} };
 struct INC : Instruction { INC(ArithmeticTarget target) : Instruction(InstructionEnum::INC, target) {} };
 struct DEC : Instruction { DEC(ArithmeticTarget target) : Instruction(InstructionEnum::DEC, target) {} };
-struct CCF : Instruction { CCF(ArithmeticTarget target) : Instruction(InstructionEnum::CCF, target) {} };
+struct CCF : Instruction { CCF() : Instruction(InstructionEnum::CCF) {} };
 struct SCF : Instruction { SCF(ArithmeticTarget target) : Instruction(InstructionEnum::SCF, target) {} };
 struct RRA : Instruction { RRA(ArithmeticTarget target) : Instruction(InstructionEnum::RRA, target) {} };
 struct RLA : Instruction { RLA(ArithmeticTarget target) : Instruction(InstructionEnum::RLA, target) {} };
 struct RRCA : Instruction { RRCA(ArithmeticTarget target) : Instruction(InstructionEnum::RRCA, target) {} };
 struct RRLA : Instruction { RRLA(ArithmeticTarget target) : Instruction(InstructionEnum::RRLA, target) {} };
 struct CPL : Instruction { CPL(ArithmeticTarget target) : Instruction(InstructionEnum::CPL, target) {} };
-struct BIT : Instruction { BIT(ArithmeticTarget target) : Instruction(InstructionEnum::BIT, target) {} };
-struct RESET : Instruction { RESET(ArithmeticTarget target) : Instruction(InstructionEnum::RESET, target) {} };
-struct SET : Instruction { SET(ArithmeticTarget target) : Instruction(InstructionEnum::SET, target) {} };
+struct BIT : Instruction { BIT(ArithmeticTarget target, RegisterBit bit) : Instruction(InstructionEnum::BIT, target, bit) {} };
+struct RESET : Instruction { RESET(ArithmeticTarget target, RegisterBit bit) : Instruction(InstructionEnum::RESET, target, bit) {} };
+struct SET : Instruction { SET(ArithmeticTarget target, RegisterBit bit) : Instruction(InstructionEnum::SET, target, bit) {} };
 struct SRL : Instruction { SRL(ArithmeticTarget target) : Instruction(InstructionEnum::SRL, target) {} };
 struct RR : Instruction { RR(ArithmeticTarget target) : Instruction(InstructionEnum::RR, target) {} };
 struct RL : Instruction { RL(ArithmeticTarget target) : Instruction(InstructionEnum::RL, target) {} };
@@ -293,7 +295,6 @@ u8 CPU::dec(u8 value) {
 }
 
 void CPU::ccf() {
-    registers.AF.flags.subtract = false;
     registers.AF.flags.carry = registers.AF.flags.carry ? false : true;
 }
 
@@ -1047,246 +1048,43 @@ u16 CPU::execute(Instruction instruction) {
     break;
     case InstructionEnum::CCF:
     {
-        switch (instruction.target) {
-        case ArithmeticTarget::A: {
-            ccf();
-        }
-                                break;
-        case ArithmeticTarget::B: {
-            ccf();
-        }
-                                break;
-        case ArithmeticTarget::C: {
-            ccf();
-        }
-                                break;
-        case ArithmeticTarget::D: {
-            ccf();
-        }
-                                break;
-        case ArithmeticTarget::E: {
-            ccf();
-        }
-                                break;
-        case ArithmeticTarget::H: {
-            ccf();
-        }
-                                break;
-        case ArithmeticTarget::L: {
-            ccf();
-        }
-                                break;
-        }
+        ccf();
         __assume(false);
     }
     break;
     case InstructionEnum::SCF:
     {
-        switch (instruction.target) {
-        case ArithmeticTarget::A: {
-            scf();
-        }
-                                break;
-        case ArithmeticTarget::B: {
-            scf();
-        }
-                                break;
-        case ArithmeticTarget::C: {
-            scf();
-        }
-                                break;
-        case ArithmeticTarget::D: {
-            scf();
-        }
-                                break;
-        case ArithmeticTarget::E: {
-            scf();
-        }
-                                break;
-        case ArithmeticTarget::H: {
-            scf();
-        }
-                                break;
-        case ArithmeticTarget::L: {
-            scf();
-        }
-                                break;
-        }
+        scf();
         __assume(false);
     }
     break;
     case InstructionEnum::RRA:
     {
-        switch (instruction.target) {
-        case ArithmeticTarget::A: {
-            rra();
-        }
-                                break;
-        case ArithmeticTarget::B: {
-            rra();
-        }
-                                break;
-        case ArithmeticTarget::C: {
-            rra();
-        }
-                                break;
-        case ArithmeticTarget::D: {
-            rra();
-        }
-                                break;
-        case ArithmeticTarget::E: {
-            rra();
-        }
-                                break;
-        case ArithmeticTarget::H: {
-            rra();
-        }
-                                break;
-        case ArithmeticTarget::L: {
-            rra();
-        }
-                                break;
-        }
+        rra();
         __assume(false);
     }
     break;
     case InstructionEnum::RLA:
     {
-        switch (instruction.target) {
-        case ArithmeticTarget::A: {
-            rla();
-        }
-                                break;
-        case ArithmeticTarget::B: {
-            rla();
-        }
-                                break;
-        case ArithmeticTarget::C: {
-            rla();
-        }
-                                break;
-        case ArithmeticTarget::D: {
-            rla();
-        }
-                                break;
-        case ArithmeticTarget::E: {
-            rla();
-        }
-                                break;
-        case ArithmeticTarget::H: {
-            rla();
-        }
-                                break;
-        case ArithmeticTarget::L: {
-            rla();
-        }
-                                break;
-        }
+        rla();
         __assume(false);
     }
     break;
     case InstructionEnum::RRCA:
     {
-        switch (instruction.target) {
-        case ArithmeticTarget::A: {
-            rrca();
-        }
-                                break;
-        case ArithmeticTarget::B: {
-            rrca();
-        }
-                                break;
-        case ArithmeticTarget::C: {
-            rrca();
-        }
-                                break;
-        case ArithmeticTarget::D: {
-            rrca();
-        }
-                                break;
-        case ArithmeticTarget::E: {
-            rrca();
-        }
-                                break;
-        case ArithmeticTarget::H: {
-            rrca();
-        }
-                                break;
-        case ArithmeticTarget::L: {
-            rrca();
-        }
-                                break;
-        }
+        rrca();
         __assume(false);
     }
     break;
     case InstructionEnum::RRLA:
     {
-        switch (instruction.target) {
-        case ArithmeticTarget::A: {
-            rrla();
-        }
-                                break;
-        case ArithmeticTarget::B: {
-            rrla();
-        }
-                                break;
-        case ArithmeticTarget::C: {
-            rrla();
-        }
-                                break;
-        case ArithmeticTarget::D: {
-            rrla();
-        }
-                                break;
-        case ArithmeticTarget::E: {
-            rrla();
-        }
-                                break;
-        case ArithmeticTarget::H: {
-            rrla();
-        }
-                                break;
-        case ArithmeticTarget::L: {
-            rrla();
-        }
-                                break;
-        }
+        rrla();
         __assume(false);
     }
     break;
     case InstructionEnum::CPL:
     {
-        switch (instruction.target) {
-        case ArithmeticTarget::A: {
-            cpl();
-        }
-                                break;
-        case ArithmeticTarget::B: {
-            cpl();
-        }
-                                break;
-        case ArithmeticTarget::C: {
-            cpl();
-        }
-                                break;
-        case ArithmeticTarget::D: {
-            cpl();
-        }
-                                break;
-        case ArithmeticTarget::E: {
-            cpl();
-        }
-                                break;
-        case ArithmeticTarget::H: {
-            cpl();
-        }
-                                break;
-        case ArithmeticTarget::L: {
-            cpl();
-        }
-                                break;
-        }
+        cpl();
         __assume(false);
     }
     break;
@@ -2426,6 +2224,39 @@ std::optional<Instruction> Instruction::from_byte(u8 byte) {
         return CP(ArithmeticTarget::H);
     case 0xBD:
         return CP(ArithmeticTarget::L);
+
+    case 0x3C:
+        return INC(ArithmeticTarget::A);
+    case 0x4:
+        return INC(ArithmeticTarget::B);
+    case 0xC:
+        return INC(ArithmeticTarget::C);
+    case 0x14:
+        return INC(ArithmeticTarget::D);
+    case 0x1C:
+        return INC(ArithmeticTarget::E);
+    case 0x24:
+        return INC(ArithmeticTarget::H);
+    case 0x22:
+        return INC(ArithmeticTarget::L);
+
+    case 0x3D:
+        return DEC(ArithmeticTarget::A);
+    case 0x5:
+        return DEC(ArithmeticTarget::B);
+    case 0xD:
+        return DEC(ArithmeticTarget::C);
+    case 0x15:
+        return DEC(ArithmeticTarget::D);
+    case 0x1D:
+        return DEC(ArithmeticTarget::E);
+    case 0x25:
+        return DEC(ArithmeticTarget::H);
+    case 0x2D:
+        return DEC(ArithmeticTarget::L);
+
+    case 0x3F:
+        return CCF();
     }
 
     return std::nullopt;
