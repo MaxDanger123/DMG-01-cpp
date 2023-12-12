@@ -2310,19 +2310,19 @@ std::optional<Instruction> Instruction::from_byte_prefixed(u8 byte) {
     switch (byte) {
     case 0x47:
         return BIT(RegisterBit::_0, ArithmeticTarget::A);
-    case 0x4F:
+    case 0x4f:
         return BIT(RegisterBit::_1, ArithmeticTarget::A);
     case 0x57:
         return BIT(RegisterBit::_2, ArithmeticTarget::A);
-    case 0x5F:
+    case 0x5f:
         return BIT(RegisterBit::_3, ArithmeticTarget::A);
     case 0x67:
         return BIT(RegisterBit::_4, ArithmeticTarget::A);
-    case 0x6F:
+    case 0x6f:
         return BIT(RegisterBit::_5, ArithmeticTarget::A);
     case 0x77:
         return BIT(RegisterBit::_6, ArithmeticTarget::A);
-    case 0x7F:
+    case 0x7f:
         return BIT(RegisterBit::_7, ArithmeticTarget::A);
 
     case 0x40:
@@ -2342,7 +2342,93 @@ std::optional<Instruction> Instruction::from_byte_prefixed(u8 byte) {
     case 0x78:
         return BIT(RegisterBit::_7, ArithmeticTarget::B);
 
+    case 0x41:
+        return BIT(RegisterBit::_0, ArithmeticTarget::C);
+    case 0x49:
+        return BIT(RegisterBit::_1, ArithmeticTarget::C);
+    case 0x51:
+        return BIT(RegisterBit::_2, ArithmeticTarget::C);
+    case 0x59:
+        return BIT(RegisterBit::_3, ArithmeticTarget::C);
+    case 0x61:
+        return BIT(RegisterBit::_4, ArithmeticTarget::C);
+    case 0x69:
+        return BIT(RegisterBit::_5, ArithmeticTarget::C);
+    case 0x71:
+        return BIT(RegisterBit::_6, ArithmeticTarget::C);
+    case 0x79:
+        return BIT(RegisterBit::_7, ArithmeticTarget::C);
 
+    case 0x42:
+        return BIT(RegisterBit::_0, ArithmeticTarget::D);
+    case 0x4a:
+        return BIT(RegisterBit::_1, ArithmeticTarget::D);
+    case 0x52:
+        return BIT(RegisterBit::_2, ArithmeticTarget::D);
+    case 0x5a:
+        return BIT(RegisterBit::_3, ArithmeticTarget::D);
+    case 0x62:
+        return BIT(RegisterBit::_4, ArithmeticTarget::D);
+    case 0x6a:
+        return BIT(RegisterBit::_5, ArithmeticTarget::D);
+    case 0x72:
+        return BIT(RegisterBit::_6, ArithmeticTarget::D);
+    case 0x7a:
+        return BIT(RegisterBit::_7, ArithmeticTarget::D);
+
+    case 0x43:
+        return BIT(RegisterBit::_0, ArithmeticTarget::E);
+    case 0x4b:
+        return BIT(RegisterBit::_1, ArithmeticTarget::E);
+    case 0x53:
+        return BIT(RegisterBit::_2, ArithmeticTarget::E);
+    case 0x5b:
+        return BIT(RegisterBit::_3, ArithmeticTarget::E);
+    case 0x63:
+        return BIT(RegisterBit::_4, ArithmeticTarget::E);
+    case 0x6b:
+        return BIT(RegisterBit::_5, ArithmeticTarget::E);
+    case 0x73:
+        return BIT(RegisterBit::_6, ArithmeticTarget::E);
+    case 0x7b:
+        return BIT(RegisterBit::_7, ArithmeticTarget::E);
+
+    case 0x44:
+        return BIT(RegisterBit::_0, ArithmeticTarget::H);
+    case 0x4c:
+        return BIT(RegisterBit::_1, ArithmeticTarget::H);
+    case 0x54:
+        return BIT(RegisterBit::_2, ArithmeticTarget::H);
+    case 0x5c:
+        return BIT(RegisterBit::_3, ArithmeticTarget::H);
+    case 0x64:
+        return BIT(RegisterBit::_4, ArithmeticTarget::H);
+    case 0x6c:
+        return BIT(RegisterBit::_5, ArithmeticTarget::H);
+    case 0x74:
+        return BIT(RegisterBit::_6, ArithmeticTarget::H);
+    case 0x7c:
+        return BIT(RegisterBit::_7, ArithmeticTarget::H);
+
+    case 0x45:
+        return BIT(RegisterBit::_0, ArithmeticTarget::L);
+    case 0x4d:
+        return BIT(RegisterBit::_1, ArithmeticTarget::L);
+    case 0x55:
+        return BIT(RegisterBit::_2, ArithmeticTarget::L);
+    case 0x5d:
+        return BIT(RegisterBit::_3, ArithmeticTarget::L);
+    case 0x65:
+        return BIT(RegisterBit::_4, ArithmeticTarget::L);
+    case 0x6d:
+        return BIT(RegisterBit::_5, ArithmeticTarget::L);
+    case 0x75:
+        return BIT(RegisterBit::_6, ArithmeticTarget::L);
+    case 0x7d:
+        return BIT(RegisterBit::_7, ArithmeticTarget::L);
+
+
+    
     }
 
     return std::nullopt;
