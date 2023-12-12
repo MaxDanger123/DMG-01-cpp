@@ -2396,6 +2396,36 @@ std::optional<Instruction> Instruction::from_byte(u8 byte) {
         return OR(ArithmeticTarget::H);
     case 0xB5:
         return OR(ArithmeticTarget::L);
+
+    case 0xAF:
+        return XOR(ArithmeticTarget::A);
+    case 0xA8:
+        return XOR(ArithmeticTarget::B);
+    case 0xA9:
+        return XOR(ArithmeticTarget::C);
+    case 0xAA:
+        return XOR(ArithmeticTarget::D);
+    case 0xAB:
+        return XOR(ArithmeticTarget::E);
+    case 0xAC:
+        return XOR(ArithmeticTarget::H);
+    case 0xAD:
+        return XOR(ArithmeticTarget::L);
+
+    case 0xBF:
+        return CP(ArithmeticTarget::A);
+    case 0xB8:
+        return CP(ArithmeticTarget::B);
+    case 0xB9:
+        return CP(ArithmeticTarget::C);
+    case 0xBA:
+        return CP(ArithmeticTarget::D);
+    case 0xBB:
+        return CP(ArithmeticTarget::E);
+    case 0xBC:
+        return CP(ArithmeticTarget::H);
+    case 0xBD:
+        return CP(ArithmeticTarget::L);
     }
 
     return std::nullopt;
