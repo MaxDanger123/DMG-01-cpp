@@ -83,7 +83,7 @@ struct Registers {
 };
 
 enum struct InstructionEnum : u8 {
-    ADD, ADDHL, ADDC, SUB, SBC, AND, OR, XOR, CP, INC, DEC, CCF, SCF, RRA, RLA, RRCA, RRLA, CPL, BIT,
+    ADD, ADDHL, ADDC, SUB, SBC, AND, OR, XOR, CP, INC, DEC, CCF, SCF, RRA, RLA, RRCA, RLCA, CPL, BIT,
     RESET, SET, SRL, RR, RL, RRC, RLC, SRA, SLA, SWAP,
 };
 
@@ -120,12 +120,12 @@ struct CP : Instruction { CP(ArithmeticTarget target) : Instruction(InstructionE
 struct INC : Instruction { INC(ArithmeticTarget target) : Instruction(InstructionEnum::INC, target) {} };
 struct DEC : Instruction { DEC(ArithmeticTarget target) : Instruction(InstructionEnum::DEC, target) {} };
 struct CCF : Instruction { CCF() : Instruction(InstructionEnum::CCF) {} };
-struct SCF : Instruction { SCF(ArithmeticTarget target) : Instruction(InstructionEnum::SCF, target) {} };
-struct RRA : Instruction { RRA(ArithmeticTarget target) : Instruction(InstructionEnum::RRA, target) {} };
-struct RLA : Instruction { RLA(ArithmeticTarget target) : Instruction(InstructionEnum::RLA, target) {} };
-struct RRCA : Instruction { RRCA(ArithmeticTarget target) : Instruction(InstructionEnum::RRCA, target) {} };
-struct RRLA : Instruction { RRLA(ArithmeticTarget target) : Instruction(InstructionEnum::RRLA, target) {} };
-struct CPL : Instruction { CPL(ArithmeticTarget target) : Instruction(InstructionEnum::CPL, target) {} };
+struct SCF : Instruction { SCF() : Instruction(InstructionEnum::SCF) {} };
+struct RRA : Instruction { RRA() : Instruction(InstructionEnum::RRA) {} };
+struct RLA : Instruction { RLA() : Instruction(InstructionEnum::RLA) {} };
+struct RRCA : Instruction { RRCA() : Instruction(InstructionEnum::RRCA) {} };
+struct RLCA : Instruction { RLCA() : Instruction(InstructionEnum::RLCA) {} };
+struct CPL : Instruction { CPL() : Instruction(InstructionEnum::CPL) {} };
 struct BIT : Instruction { BIT(ArithmeticTarget target, RegisterBit bit) : Instruction(InstructionEnum::BIT, target, bit) {} };
 struct RESET : Instruction { RESET(ArithmeticTarget target, RegisterBit bit) : Instruction(InstructionEnum::RESET, target, bit) {} };
 struct SET : Instruction { SET(ArithmeticTarget target, RegisterBit bit) : Instruction(InstructionEnum::SET, target, bit) {} };
@@ -170,7 +170,7 @@ struct CPU {
     void rra();
     void rla();
     void rrca();
-    void rrla();
+    void rlca();
     void cpl();
     u8 bit(u8 reg, u8 bit);
     u8 reset(u8 reg, u8 bit);
@@ -356,7 +356,7 @@ void CPU::rrca() {
     registers.AF.flags.half_carry = 0;
 }
 
-void CPU::rrla() {
+void CPU::rlca() {
     //TODO(Andrea): check for correctness, copy-paste from RRCA
     auto reg_a = registers.AF.first;
     auto reg_a_bitset = std::bitset<8>(reg_a);
@@ -1076,9 +1076,9 @@ u16 CPU::execute(Instruction instruction) {
         __assume(false);
     }
     break;
-    case InstructionEnum::RRLA:
+    case InstructionEnum::RLCA:
     {
-        rrla();
+        rlca();
         __assume(false);
     }
     break;
@@ -2257,6 +2257,21 @@ std::optional<Instruction> Instruction::from_byte(u8 byte) {
 
     case 0x3F:
         return CCF();
+
+    case 0x37:
+        return SCF();
+
+    case 0x1F:
+        return RRA();
+
+    case 0x17:
+        return RLA();
+
+    case 0x0F:
+        return RRCA();
+
+    case 0x07:
+        return RLCA();
     }
 
     return std::nullopt;
