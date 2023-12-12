@@ -174,7 +174,7 @@ struct CPU {
     void rrca();
     void rlca();
     void cpl();
-    u8 bit(u8 reg, u8 bit);
+    void bit(u8 reg, u8 bit);
     u8 reset(u8 reg, u8 bit);
     u8 set(u8 reg, u8 bit);
     u8 srl(u8 value);
@@ -386,13 +386,13 @@ void CPU::cpl() {
     registers.AF.flags.subtract = false;
 }
 
-u8 CPU::bit(u8 reg, u8 bit) {
+void CPU::bit(u8 reg, u8 bit) {
     auto reg_mirror = std::bitset<8>(reg);
-    bool res = reg_mirror[bit];
+    bool res = reg_mirror[static_cast<size_t>(7) - bit];
 
-    registers.AF.flags.subtract = false;
-
-    return (res ? 1 : 0);
+    //registers.AF.flags.subtract = false;
+    registers.AF.flags.zero = !res;
+    registers.AF.flags.half_carry = true;
 }
 
 u8 CPU::reset(u8 reg, u8 bit) {
@@ -1097,28 +1097,28 @@ u16 CPU::execute(Instruction instruction) {
             auto value = registers.AF.first;
             switch (instruction.bit) {
                 case RegisterBit::_0:
-                    registers.AF.first = bit(value, 0);
+                    bit(value, 0);
                     break;
                 case RegisterBit::_1:
-                    registers.AF.first = bit(value, 1);
+                    bit(value, 1);
                     break;
                 case RegisterBit::_2:
-                    registers.AF.first = bit(value, 2);
+                    bit(value, 2);
                     break;
                 case RegisterBit::_3:
-                    registers.AF.first = bit(value, 3);
+                    bit(value, 3);
                     break;
                 case RegisterBit::_4:
-                    registers.AF.first = bit(value, 4);
+                    bit(value, 4);
                     break;
                 case RegisterBit::_5:
-                    registers.AF.first = bit(value, 5);
+                    bit(value, 5);
                     break;
                 case RegisterBit::_6:
-                    registers.AF.first = bit(value, 6);
+                    bit(value, 6);
                     break;
                 case RegisterBit::_7:
-                    registers.AF.first = bit(value, 7);
+                    bit(value, 7);
                     break;
             }
         }
@@ -1127,28 +1127,28 @@ u16 CPU::execute(Instruction instruction) {
             auto value = registers.BC.first;
             switch (instruction.bit) {
             case RegisterBit::_0:
-                registers.BC.first = bit(value, 0);
+                bit(value, 0);
                 break;
             case RegisterBit::_1:
-                registers.BC.first = bit(value, 1);
+                bit(value, 1);
                 break;
             case RegisterBit::_2:
-                registers.BC.first = bit(value, 2);
+                bit(value, 2);
                 break;
             case RegisterBit::_3:
-                registers.BC.first = bit(value, 3);
+                bit(value, 3);
                 break;
             case RegisterBit::_4:
-                registers.BC.first = bit(value, 4);
+                bit(value, 4);
                 break;
             case RegisterBit::_5:
-                registers.BC.first = bit(value, 5);
+                bit(value, 5);
                 break;
             case RegisterBit::_6:
-                registers.BC.first = bit(value, 6);
+                bit(value, 6);
                 break;
             case RegisterBit::_7:
-                registers.BC.first = bit(value, 7);
+                bit(value, 7);
                 break;
             }
         }
@@ -1157,28 +1157,28 @@ u16 CPU::execute(Instruction instruction) {
             auto value = registers.BC.second;
             switch (instruction.bit) {
             case RegisterBit::_0:
-                registers.BC.second = bit(value, 0);
+                bit(value, 0);
                 break;
             case RegisterBit::_1:
-                registers.BC.second = bit(value, 1);
+                bit(value, 1);
                 break;
             case RegisterBit::_2:
-                registers.BC.second = bit(value, 2);
+                bit(value, 2);
                 break;
             case RegisterBit::_3:
-                registers.BC.second = bit(value, 3);
+                bit(value, 3);
                 break;
             case RegisterBit::_4:
-                registers.BC.second = bit(value, 4);
+                bit(value, 4);
                 break;
             case RegisterBit::_5:
-                registers.BC.second = bit(value, 5);
+                bit(value, 5);
                 break;
             case RegisterBit::_6:
-                registers.BC.second = bit(value, 6);
+                bit(value, 6);
                 break;
             case RegisterBit::_7:
-                registers.BC.second = bit(value, 7);
+                bit(value, 7);
                 break;
             }
         }
@@ -1187,28 +1187,28 @@ u16 CPU::execute(Instruction instruction) {
             auto value = registers.DE.first;
             switch (instruction.bit) {
             case RegisterBit::_0:
-                registers.DE.first = bit(value, 0);
+                bit(value, 0);
                 break;
             case RegisterBit::_1:
-                registers.DE.first = bit(value, 1);
+                bit(value, 1);
                 break;
             case RegisterBit::_2:
-                registers.DE.first = bit(value, 2);
+                bit(value, 2);
                 break;
             case RegisterBit::_3:
-                registers.DE.first = bit(value, 3);
+                bit(value, 3);
                 break;
             case RegisterBit::_4:
-                registers.DE.first = bit(value, 4);
+                bit(value, 4);
                 break;
             case RegisterBit::_5:
-                registers.DE.first = bit(value, 5);
+                bit(value, 5);
                 break;
             case RegisterBit::_6:
-                registers.DE.first = bit(value, 6);
+                bit(value, 6);
                 break;
             case RegisterBit::_7:
-                registers.DE.first = bit(value, 7);
+                bit(value, 7);
                 break;
             }
         }
@@ -1217,28 +1217,28 @@ u16 CPU::execute(Instruction instruction) {
             auto value = registers.DE.second;
             switch (instruction.bit) {
             case RegisterBit::_0:
-                registers.DE.second = bit(value, 0);
+                bit(value, 0);
                 break;
             case RegisterBit::_1:
-                registers.DE.second = bit(value, 1);
+                bit(value, 1);
                 break;
             case RegisterBit::_2:
-                registers.DE.second = bit(value, 2);
+                bit(value, 2);
                 break;
             case RegisterBit::_3:
-                registers.DE.second = bit(value, 3);
+                bit(value, 3);
                 break;
             case RegisterBit::_4:
-                registers.DE.second = bit(value, 4);
+                bit(value, 4);
                 break;
             case RegisterBit::_5:
-                registers.DE.second = bit(value, 5);
+                bit(value, 5);
                 break;
             case RegisterBit::_6:
-                registers.DE.second = bit(value, 6);
+                bit(value, 6);
                 break;
             case RegisterBit::_7:
-                registers.DE.second = bit(value, 7);
+                bit(value, 7);
                 break;
             }
         }
@@ -1247,28 +1247,28 @@ u16 CPU::execute(Instruction instruction) {
             auto value = registers.HL.first;
             switch (instruction.bit) {
             case RegisterBit::_0:
-                registers.HL.first = bit(value, 0);
+                bit(value, 0);
                 break;
             case RegisterBit::_1:
-                registers.HL.first = bit(value, 1);
+                bit(value, 1);
                 break;
             case RegisterBit::_2:
-                registers.HL.first = bit(value, 2);
+                bit(value, 2);
                 break;
             case RegisterBit::_3:
-                registers.HL.first = bit(value, 3);
+                bit(value, 3);
                 break;
             case RegisterBit::_4:
-                registers.HL.first = bit(value, 4);
+                bit(value, 4);
                 break;
             case RegisterBit::_5:
-                registers.HL.first = bit(value, 5);
+                bit(value, 5);
                 break;
             case RegisterBit::_6:
-                registers.HL.first = bit(value, 6);
+                bit(value, 6);
                 break;
             case RegisterBit::_7:
-                registers.HL.first = bit(value, 7);
+                bit(value, 7);
                 break;
             }
         }
@@ -1277,28 +1277,28 @@ u16 CPU::execute(Instruction instruction) {
             auto value = registers.HL.second;
             switch (instruction.bit) {
             case RegisterBit::_0:
-                registers.HL.second = bit(value, 0);
+                bit(value, 0);
                 break;
             case RegisterBit::_1:
-                registers.HL.second = bit(value, 1);
+                bit(value, 1);
                 break;
             case RegisterBit::_2:
-                registers.HL.second = bit(value, 2);
+                bit(value, 2);
                 break;
             case RegisterBit::_3:
-                registers.HL.second = bit(value, 3);
+                bit(value, 3);
                 break;
             case RegisterBit::_4:
-                registers.HL.second = bit(value, 4);
+                bit(value, 4);
                 break;
             case RegisterBit::_5:
-                registers.HL.second = bit(value, 5);
+                bit(value, 5);
                 break;
             case RegisterBit::_6:
-                registers.HL.second = bit(value, 6);
+                bit(value, 6);
                 break;
             case RegisterBit::_7:
-                registers.HL.second = bit(value, 7);
+                bit(value, 7);
                 break;
             }
         }
