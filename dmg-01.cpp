@@ -105,7 +105,9 @@ struct Instruction {
     Instruction(InstructionEnum inst_enum, ArithmeticTarget target) : inst_enum(inst_enum), target(target) {}
     Instruction(InstructionEnum inst_enum, ArithmeticTarget target, RegisterBit bit) : inst_enum(inst_enum), target(target), bit(bit) {}
 
-    static std::optional<Instruction> from_byte(u8 byte);
+    static std::optional<Instruction> from_byte(u8 byte, bool prefixed);
+    static std::optional<Instruction> from_byte_prefixed(u8 byte);
+    static std::optional<Instruction> from_byte_not_prefixed(u8 byte);
 };
 
 struct ADD : Instruction { ADD(ArithmeticTarget target) : Instruction(InstructionEnum::ADD, target) {} };
@@ -126,9 +128,9 @@ struct RLA : Instruction { RLA() : Instruction(InstructionEnum::RLA) {} };
 struct RRCA : Instruction { RRCA() : Instruction(InstructionEnum::RRCA) {} };
 struct RLCA : Instruction { RLCA() : Instruction(InstructionEnum::RLCA) {} };
 struct CPL : Instruction { CPL() : Instruction(InstructionEnum::CPL) {} };
-struct BIT : Instruction { BIT(ArithmeticTarget target, RegisterBit bit) : Instruction(InstructionEnum::BIT, target, bit) {} };
-struct RESET : Instruction { RESET(ArithmeticTarget target, RegisterBit bit) : Instruction(InstructionEnum::RESET, target, bit) {} };
-struct SET : Instruction { SET(ArithmeticTarget target, RegisterBit bit) : Instruction(InstructionEnum::SET, target, bit) {} };
+struct BIT : Instruction { BIT(RegisterBit bit, ArithmeticTarget target) : Instruction(InstructionEnum::BIT, target, bit) {} };
+struct RESET : Instruction { RESET(RegisterBit bit, ArithmeticTarget target) : Instruction(InstructionEnum::RESET, target, bit) {} };
+struct SET : Instruction { SET(RegisterBit bit, ArithmeticTarget target) : Instruction(InstructionEnum::SET, target, bit) {} };
 struct SRL : Instruction { SRL(ArithmeticTarget target) : Instruction(InstructionEnum::SRL, target) {} };
 struct RR : Instruction { RR(ArithmeticTarget target) : Instruction(InstructionEnum::RR, target) {} };
 struct RL : Instruction { RL(ArithmeticTarget target) : Instruction(InstructionEnum::RL, target) {} };
@@ -2092,18 +2094,40 @@ u16 CPU::execute(Instruction instruction) {
 
 void CPU::step() {
     auto instruction_byte = bus.read_byte(pc);
+    bool prefixed = instruction_byte == 0xCB;
+    if (prefixed) {
+        instruction_byte = bus.read_byte(pc + 1);
+    }
     
-    std::optional<Instruction> instruction = Instruction::from_byte(instruction_byte);
+    std::optional<Instruction> instruction = Instruction::from_byte(instruction_byte, prefixed);
     if (instruction) {
         pc = execute(*instruction);
+
+        if (prefixed) {
+            pc += 1; //account for extra instruction byte
+        }
     }
     else {
-        std::cerr << "Unknown instruction found for: 0x" << std::hex << instruction_byte << "\n";
+        if (prefixed) {
+            std::cerr << "Unknown instruction found for: 0xCB" << std::hex << instruction_byte << "\n";
+        }
+        else {
+            std::cerr << "Unknown instruction found for: 0x" << std::hex << instruction_byte << "\n";
+        }
         exit(-1);
     }
 }
 
-std::optional<Instruction> Instruction::from_byte(u8 byte) {
+std::optional<Instruction> Instruction::from_byte(u8 byte, bool prefixed) {
+    if (prefixed) {
+        Instruction::from_byte_prefixed(byte);
+    }
+    else {
+        Instruction::from_byte_not_prefixed(byte);
+    }
+}
+
+std::optional<Instruction> Instruction::from_byte_not_prefixed(u8 byte) {
     switch (byte) {
     case 0x87:
         return ADD(ArithmeticTarget::A);
@@ -2272,6 +2296,53 @@ std::optional<Instruction> Instruction::from_byte(u8 byte) {
 
     case 0x07:
         return RLCA();
+
+    case 0x2F:
+        return CPL();
+    }
+
+    //BIT, RES(ET), SET, SRL, RR, RL, RRC, RLC, SRA, SLA, SWAP
+
+    return std::nullopt;
+}
+
+std::optional<Instruction> Instruction::from_byte_prefixed(u8 byte) {
+    switch (byte) {
+    case 0x47:
+        return BIT(RegisterBit::_0, ArithmeticTarget::A);
+    case 0x4F:
+        return BIT(RegisterBit::_1, ArithmeticTarget::A);
+    case 0x57:
+        return BIT(RegisterBit::_2, ArithmeticTarget::A);
+    case 0x5F:
+        return BIT(RegisterBit::_3, ArithmeticTarget::A);
+    case 0x67:
+        return BIT(RegisterBit::_4, ArithmeticTarget::A);
+    case 0x6F:
+        return BIT(RegisterBit::_5, ArithmeticTarget::A);
+    case 0x77:
+        return BIT(RegisterBit::_6, ArithmeticTarget::A);
+    case 0x7F:
+        return BIT(RegisterBit::_7, ArithmeticTarget::A);
+
+    case 0x40:
+        return BIT(RegisterBit::_0, ArithmeticTarget::B);
+    case 0x48:
+        return BIT(RegisterBit::_1, ArithmeticTarget::B);
+    case 0x50:
+        return BIT(RegisterBit::_2, ArithmeticTarget::B);
+    case 0x58:
+        return BIT(RegisterBit::_3, ArithmeticTarget::B);
+    case 0x60:
+        return BIT(RegisterBit::_4, ArithmeticTarget::B);
+    case 0x68:
+        return BIT(RegisterBit::_5, ArithmeticTarget::B);
+    case 0x70:
+        return BIT(RegisterBit::_6, ArithmeticTarget::B);
+    case 0x78:
+        return BIT(RegisterBit::_7, ArithmeticTarget::B);
+
+
     }
 
     return std::nullopt;
