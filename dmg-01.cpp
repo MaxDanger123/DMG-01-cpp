@@ -2301,7 +2301,7 @@ std::optional<Instruction> Instruction::from_byte_not_prefixed(u8 byte) {
         return CPL();
     }
 
-    //BIT, RES(ET), SET, SRL, RR, RL, RRC, RLC, SRA, SLA, SWAP
+    //RES(ET), SET, SRL, RR, RL, RRC, RLC, SRA, SLA, SWAP
 
     return std::nullopt;
 }
@@ -2428,7 +2428,124 @@ std::optional<Instruction> Instruction::from_byte_prefixed(u8 byte) {
         return BIT(RegisterBit::_7, ArithmeticTarget::L);
 
 
-    
+    case 0xc7:
+        return RESET(RegisterBit::_0, ArithmeticTarget::A);
+    case 0xcf:
+        return RESET(RegisterBit::_1, ArithmeticTarget::A);
+    case 0xd7:
+        return RESET(RegisterBit::_2, ArithmeticTarget::A);
+    case 0xdf:
+        return RESET(RegisterBit::_3, ArithmeticTarget::A);
+    case 0xe7:
+        return RESET(RegisterBit::_4, ArithmeticTarget::A);
+    case 0xef:
+        return RESET(RegisterBit::_5, ArithmeticTarget::A);
+    case 0xf7:
+        return RESET(RegisterBit::_6, ArithmeticTarget::A);
+    case 0xff:
+        return RESET(RegisterBit::_7, ArithmeticTarget::A);
+
+    case 0xc0:
+        return RESET(RegisterBit::_0, ArithmeticTarget::B);
+    case 0xc8:
+        return RESET(RegisterBit::_1, ArithmeticTarget::B);
+    case 0xd0:
+        return RESET(RegisterBit::_2, ArithmeticTarget::B);
+    case 0xd8:
+        return RESET(RegisterBit::_3, ArithmeticTarget::B);
+    case 0xe0:
+        return RESET(RegisterBit::_4, ArithmeticTarget::B);
+    case 0xe8:
+        return RESET(RegisterBit::_5, ArithmeticTarget::B);
+    case 0xf0:
+        return RESET(RegisterBit::_6, ArithmeticTarget::B);
+    case 0xf8:
+        return RESET(RegisterBit::_7, ArithmeticTarget::B);
+
+    case 0xc1:
+        return RESET(RegisterBit::_0, ArithmeticTarget::C);
+    case 0xc9:
+        return RESET(RegisterBit::_1, ArithmeticTarget::C);
+    case 0xd1:
+        return RESET(RegisterBit::_2, ArithmeticTarget::C);
+    case 0xd9:
+        return RESET(RegisterBit::_3, ArithmeticTarget::C);
+    case 0xe1:
+        return RESET(RegisterBit::_4, ArithmeticTarget::C);
+    case 0xe9:
+        return RESET(RegisterBit::_5, ArithmeticTarget::C);
+    case 0xf1:
+        return RESET(RegisterBit::_6, ArithmeticTarget::C);
+    case 0xf9:
+        return RESET(RegisterBit::_7, ArithmeticTarget::C);
+
+    case 0xc2:
+        return RESET(RegisterBit::_0, ArithmeticTarget::D);
+    case 0xca:
+        return RESET(RegisterBit::_1, ArithmeticTarget::D);
+    case 0xd2:
+        return RESET(RegisterBit::_2, ArithmeticTarget::D);
+    case 0xda:
+        return RESET(RegisterBit::_3, ArithmeticTarget::D);
+    case 0xe2:
+        return RESET(RegisterBit::_4, ArithmeticTarget::D);
+    case 0xea:
+        return RESET(RegisterBit::_5, ArithmeticTarget::D);
+    case 0xf2:
+        return RESET(RegisterBit::_6, ArithmeticTarget::D);
+    case 0xfa:
+        return RESET(RegisterBit::_7, ArithmeticTarget::D);
+
+    case 0xc3:
+        return RESET(RegisterBit::_0, ArithmeticTarget::E);
+    case 0xcb:
+        return RESET(RegisterBit::_1, ArithmeticTarget::E);
+    case 0xd3:
+        return RESET(RegisterBit::_2, ArithmeticTarget::E);
+    case 0xdb:
+        return RESET(RegisterBit::_3, ArithmeticTarget::E);
+    case 0xe3:
+        return RESET(RegisterBit::_4, ArithmeticTarget::E);
+    case 0xeb:
+        return RESET(RegisterBit::_5, ArithmeticTarget::E);
+    case 0xf3:
+        return RESET(RegisterBit::_6, ArithmeticTarget::E);
+    case 0xfb:
+        return RESET(RegisterBit::_7, ArithmeticTarget::E);
+
+    case 0xc4:
+        return RESET(RegisterBit::_0, ArithmeticTarget::H);
+    case 0xcc:
+        return RESET(RegisterBit::_1, ArithmeticTarget::H);
+    case 0xd4:
+        return RESET(RegisterBit::_2, ArithmeticTarget::H);
+    case 0xdc:
+        return RESET(RegisterBit::_3, ArithmeticTarget::H);
+    case 0xe4:
+        return RESET(RegisterBit::_4, ArithmeticTarget::H);
+    case 0xec:
+        return RESET(RegisterBit::_5, ArithmeticTarget::H);
+    case 0xf4:
+        return RESET(RegisterBit::_6, ArithmeticTarget::H);
+    case 0xfc:
+        return RESET(RegisterBit::_7, ArithmeticTarget::H);
+
+    case 0xc5:
+        return RESET(RegisterBit::_0, ArithmeticTarget::L);
+    case 0xcd:
+        return RESET(RegisterBit::_1, ArithmeticTarget::L);
+    case 0xd5:
+        return RESET(RegisterBit::_2, ArithmeticTarget::L);
+    case 0xdd:
+        return RESET(RegisterBit::_3, ArithmeticTarget::L);
+    case 0xe5:
+        return RESET(RegisterBit::_4, ArithmeticTarget::L);
+    case 0xed:
+        return RESET(RegisterBit::_5, ArithmeticTarget::L);
+    case 0xf5:
+        return RESET(RegisterBit::_6, ArithmeticTarget::L);
+    case 0xfd:
+        return RESET(RegisterBit::_7, ArithmeticTarget::L);
     }
 
     return std::nullopt;
