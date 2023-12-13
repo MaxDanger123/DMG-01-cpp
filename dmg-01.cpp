@@ -2303,7 +2303,7 @@ std::optional<Instruction> Instruction::from_byte_not_prefixed(u8 byte) {
         return CPL();
     }
 
-    //RR, RL, RRC, RLC, SRA, SLA, SWAP
+    //RL, RRC, RLC, SRA, SLA, SWAP
 
     return std::nullopt;
 }
@@ -2686,7 +2686,36 @@ std::optional<Instruction> Instruction::from_byte_prefixed(u8 byte) {
         return SRL(ArithmeticTarget::L);
 
 
-    
+    case 0xf:
+        return RR(ArithmeticTarget::A);
+    case 0x8:
+        return RR(ArithmeticTarget::B);
+    case 0x9:
+        return RR(ArithmeticTarget::C);
+    case 0xa:
+        return RR(ArithmeticTarget::D);
+    case 0xb:
+        return RR(ArithmeticTarget::E);
+    case 0xc:
+        return RR(ArithmeticTarget::H);
+    case 0xd:
+        return RR(ArithmeticTarget::L);
+
+
+    case 0x17:
+        return RL(ArithmeticTarget::A);
+    case 0x10:
+        return RL(ArithmeticTarget::B);
+    case 0x11:
+        return RL(ArithmeticTarget::C);
+    case 0x12:
+        return RL(ArithmeticTarget::D);
+    case 0x13:
+        return RL(ArithmeticTarget::E);
+    case 0x14:
+        return RL(ArithmeticTarget::H);
+    case 0x15:
+        return RL(ArithmeticTarget::L);
     }
 
     return std::nullopt;
