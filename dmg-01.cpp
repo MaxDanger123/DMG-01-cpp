@@ -7,6 +7,7 @@
 #include "SafeInt.hpp"
 
 using u8 = uint8_t;
+using s8 = int8_t;
 using u16 = uint16_t;
 
 namespace consts {
@@ -197,6 +198,7 @@ struct CPU {
     u8 swap(u8 reg);
 
     u16 jump(bool should_jump);
+    u16 jr(bool should_jump);
 };
 
 u8 CPU::add(u8 value) {
@@ -565,6 +567,17 @@ u16 CPU::jump(bool should_jump) {
     }
     else {
         SafeAdd(pc, static_cast<u16>(3), pc);
+    }
+}
+
+u16 CPU::jr(bool should_jump) {
+    if (should_jump) {
+        auto offset = static_cast<s8>(bus.read_byte(pc + 1));
+        u16 res = pc + offset;
+        return res;
+    }
+    else {
+        SafeAdd(pc, static_cast<u16>(2), pc);
     }
 }
 
@@ -2142,7 +2155,32 @@ u16 CPU::execute(Instruction instruction) {
     break;
     case InstructionEnum::JR:
     {
-
+        bool jump_condition;
+        switch (instruction.test) {
+        case JumpTest::NotZero: {
+            jump_condition = !registers.AF.flags.zero;
+            return jr(jump_condition);
+        }
+                              break;
+        case JumpTest::NotCarry: {
+            jump_condition = !registers.AF.flags.carry;
+            return jr(jump_condition);
+        }
+                               break;
+        case JumpTest::Zero: {
+            jump_condition = registers.AF.flags.zero;
+            return jr(jump_condition);
+        }
+                           break;
+        case JumpTest::Carry: {
+            jump_condition = registers.AF.flags.carry;
+            return jr(jump_condition);
+        }
+                            break;
+        case JumpTest::Always:
+            return jr(true);
+        }
+        break;
     }
     break;
 
@@ -2375,6 +2413,21 @@ std::optional<Instruction> Instruction::from_byte_not_prefixed(u8 byte) {
 
     case 0xC3:
         return JP(JumpTest::Always);
+
+    case 0x38:
+        return JR(JumpTest::Carry);
+
+    case 0x30:
+        return JR(JumpTest::NotCarry);
+
+    case 0x28:
+        return JR(JumpTest::Zero);
+
+    case 0x20:
+        return JR(JumpTest::NotZero);
+
+    case 0x18:
+        return JR(JumpTest::Always);
     }
 
     return std::nullopt;
