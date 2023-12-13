@@ -417,12 +417,14 @@ u8 CPU::set(u8 reg, u8 bit) {
 }
 
 u8 CPU::srl(u8 value) {
+    auto reg_mirror = std::bitset<8>(value);
+    bool least_significant_bit = reg_mirror[7];
     u8 res = value >> 1;
 
     registers.AF.flags.zero = res == 0;
     registers.AF.flags.subtract = false;
-    registers.AF.flags.carry = false;
-    registers.AF.flags.half_carry = (registers.AF.first & 0xf) + (value & 0xf) > 0xf;
+    registers.AF.flags.carry = least_significant_bit;
+    registers.AF.flags.half_carry = false;
 
     return res;
 }
@@ -2301,7 +2303,7 @@ std::optional<Instruction> Instruction::from_byte_not_prefixed(u8 byte) {
         return CPL();
     }
 
-    //SRL, RR, RL, RRC, RLC, SRA, SLA, SWAP
+    //RR, RL, RRC, RLC, SRA, SLA, SWAP
 
     return std::nullopt;
 }
@@ -2666,6 +2668,25 @@ std::optional<Instruction> Instruction::from_byte_prefixed(u8 byte) {
         return SET(RegisterBit::_6, ArithmeticTarget::L);
     case 0xfd:
         return SET(RegisterBit::_7, ArithmeticTarget::L);
+
+
+    case 0x3f:
+        return SRL(ArithmeticTarget::A);
+    case 0x38:
+        return SRL(ArithmeticTarget::B);
+    case 0x39:
+        return SRL(ArithmeticTarget::C);
+    case 0x3a:
+        return SRL(ArithmeticTarget::D);
+    case 0x3b:
+        return SRL(ArithmeticTarget::E);
+    case 0x3c:
+        return SRL(ArithmeticTarget::H);
+    case 0x3d:
+        return SRL(ArithmeticTarget::L);
+
+
+    
     }
 
     return std::nullopt;
