@@ -2303,7 +2303,7 @@ std::optional<Instruction> Instruction::from_byte_not_prefixed(u8 byte) {
         return CPL();
     }
 
-    //RL, RRC, RLC, SRA, SLA, SWAP
+    //SRA, SLA, SWAP
 
     return std::nullopt;
 }
@@ -2686,19 +2686,19 @@ std::optional<Instruction> Instruction::from_byte_prefixed(u8 byte) {
         return SRL(ArithmeticTarget::L);
 
 
-    case 0xf:
+    case 0x1f:
         return RR(ArithmeticTarget::A);
-    case 0x8:
+    case 0x18:
         return RR(ArithmeticTarget::B);
-    case 0x9:
+    case 0x19:
         return RR(ArithmeticTarget::C);
-    case 0xa:
+    case 0x1a:
         return RR(ArithmeticTarget::D);
-    case 0xb:
+    case 0x1b:
         return RR(ArithmeticTarget::E);
-    case 0xc:
+    case 0x1c:
         return RR(ArithmeticTarget::H);
-    case 0xd:
+    case 0x1d:
         return RR(ArithmeticTarget::L);
 
 
@@ -2716,6 +2716,38 @@ std::optional<Instruction> Instruction::from_byte_prefixed(u8 byte) {
         return RL(ArithmeticTarget::H);
     case 0x15:
         return RL(ArithmeticTarget::L);
+
+
+    case 0xf:
+        return RRC(ArithmeticTarget::A);
+    case 0x8:
+        return RRC(ArithmeticTarget::B);
+    case 0x9:
+        return RRC(ArithmeticTarget::C);
+    case 0xa:
+        return RRC(ArithmeticTarget::D);
+    case 0xb:
+        return RRC(ArithmeticTarget::E);
+    case 0xc:
+        return RRC(ArithmeticTarget::H);
+    case 0xd:
+        return RRC(ArithmeticTarget::L);
+
+
+    case 0x7:
+        return RLC(ArithmeticTarget::A);
+    case 0x0:
+        return RLC(ArithmeticTarget::B);
+    case 0x1:
+        return RLC(ArithmeticTarget::C);
+    case 0x2:
+        return RLC(ArithmeticTarget::D);
+    case 0x3:
+        return RLC(ArithmeticTarget::E);
+    case 0x4:
+        return RLC(ArithmeticTarget::H);
+    case 0x5:
+        return RLC(ArithmeticTarget::L);
     }
 
     return std::nullopt;
