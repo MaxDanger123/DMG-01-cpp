@@ -85,6 +85,7 @@ struct Registers {
 enum struct InstructionEnum : u8 {
     ADD, ADDHL, ADDC, SUB, SBC, AND, OR, XOR, CP, INC, DEC, CCF, SCF, RRA, RLA, RRCA, RLCA, CPL, BIT,
     RESET, SET, SRL, RR, RL, RRC, RLC, SRA, SLA, SWAP,
+    JP,
 };
 
 enum struct ArithmeticTarget : u8 {
@@ -96,14 +97,20 @@ enum struct RegisterBit : u8 {
     _0, _1, _2, _3, _4, _5, _6, _7
 };
 
+enum struct JumpTest : u8 {
+    NotZero, Zero, NotCarry, Carry, Always
+};
+
 struct Instruction {
     InstructionEnum inst_enum;
     ArithmeticTarget target;
     RegisterBit bit;
+    JumpTest test;
 
     Instruction(InstructionEnum inst_enum) : inst_enum(inst_enum) {}
     Instruction(InstructionEnum inst_enum, ArithmeticTarget target) : inst_enum(inst_enum), target(target) {}
     Instruction(InstructionEnum inst_enum, ArithmeticTarget target, RegisterBit bit) : inst_enum(inst_enum), target(target), bit(bit) {}
+    Instruction(InstructionEnum inst_enum, JumpTest test) : inst_enum(inst_enum), test(test) {}
 
     static std::optional<Instruction> from_byte(u8 byte, bool prefixed);
     static std::optional<Instruction> from_byte_prefixed(u8 byte);
@@ -139,6 +146,7 @@ struct RLC : Instruction { RLC(ArithmeticTarget target) : Instruction(Instructio
 struct SRA : Instruction { SRA(ArithmeticTarget target) : Instruction(InstructionEnum::SRA, target) {} };
 struct SLA : Instruction { SLA(ArithmeticTarget target) : Instruction(InstructionEnum::SLA, target) {} };
 struct SWAP : Instruction { SWAP(ArithmeticTarget target) : Instruction(InstructionEnum::SWAP, target) {} };
+struct JP : Instruction { JP(JumpTest test) : Instruction(InstructionEnum::JP, test) {} };
 
 struct MemoryBus {
     std::array<u8, 0xFFFF> memory;
@@ -185,6 +193,8 @@ struct CPU {
     u8 sra(u8 value);
     u8 sla(u8 value);
     u8 swap(u8 reg);
+
+    u16 jump(bool should_jump);
 };
 
 u8 CPU::add(u8 value) {
@@ -542,6 +552,18 @@ u8 CPU::swap(u8 reg) {
     registers.AF.flags.half_carry = 0;
 
     return res;
+}
+
+u16 CPU::jump(bool should_jump) {
+    if (should_jump) {
+        auto least_significant = static_cast<u16>(bus.read_byte(pc + 1));
+        auto most_significant = static_cast<u16>(bus.read_byte(pc + 2));
+        u16 res = (most_significant << 8) | least_significant;
+        return res;
+    }
+    else {
+        SafeAdd(pc, static_cast<u16>(3), pc);
+    }
 }
 
 u16 CPU::execute(Instruction instruction) {
@@ -2086,6 +2108,36 @@ u16 CPU::execute(Instruction instruction) {
         __assume(false);
     }
     break;
+    case InstructionEnum::JP:
+    {
+        bool jump_condition;
+        switch (instruction.test) {
+        case JumpTest::NotZero: {
+            jump_condition = !registers.AF.flags.zero;
+            return jump(jump_condition);
+        }
+                              break;
+        case JumpTest::NotCarry: {
+            jump_condition = !registers.AF.flags.carry;
+            return jump(jump_condition);
+        }
+                               break;
+        case JumpTest::Zero: {
+            jump_condition = registers.AF.flags.zero;
+            return jump(jump_condition);
+        }
+                           break;
+        case JumpTest::Carry: {
+            jump_condition = registers.AF.flags.carry;
+            return jump(jump_condition);
+        }
+                            break;
+        case JumpTest::Always:
+            return jump(true);
+        }
+                            break;
+    }
+    break;
 
     return pc += 1;
     }
@@ -2302,8 +2354,6 @@ std::optional<Instruction> Instruction::from_byte_not_prefixed(u8 byte) {
     case 0x2F:
         return CPL();
     }
-
-    //SRA, SLA, SWAP
 
     return std::nullopt;
 }
@@ -2748,6 +2798,54 @@ std::optional<Instruction> Instruction::from_byte_prefixed(u8 byte) {
         return RLC(ArithmeticTarget::H);
     case 0x5:
         return RLC(ArithmeticTarget::L);
+
+
+    case 0x2f:
+        return SRA(ArithmeticTarget::A);
+    case 0x28:
+        return SRA(ArithmeticTarget::B);
+    case 0x29:
+        return SRA(ArithmeticTarget::C);
+    case 0x2a:
+        return SRA(ArithmeticTarget::D);
+    case 0x2b:
+        return SRA(ArithmeticTarget::E);
+    case 0x2c:
+        return SRA(ArithmeticTarget::H);
+    case 0x2d:
+        return SRA(ArithmeticTarget::L);
+
+
+    case 0x27:
+        return SLA(ArithmeticTarget::A);
+    case 0x20:
+        return SLA(ArithmeticTarget::B);
+    case 0x21:
+        return SLA(ArithmeticTarget::C);
+    case 0x22:
+        return SLA(ArithmeticTarget::D);
+    case 0x23:
+        return SLA(ArithmeticTarget::E);
+    case 0x24:
+        return SLA(ArithmeticTarget::H);
+    case 0x25:
+        return SLA(ArithmeticTarget::L);
+
+
+    case 0x37:
+        return SWAP(ArithmeticTarget::A);
+    case 0x30:
+        return SWAP(ArithmeticTarget::B);
+    case 0x31:
+        return SWAP(ArithmeticTarget::C);
+    case 0x32:
+        return SWAP(ArithmeticTarget::D);
+    case 0x33:
+        return SWAP(ArithmeticTarget::E);
+    case 0x34:
+        return SWAP(ArithmeticTarget::H);
+    case 0x35:
+        return SWAP(ArithmeticTarget::L);
     }
 
     return std::nullopt;
