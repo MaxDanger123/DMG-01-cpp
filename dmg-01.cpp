@@ -85,7 +85,7 @@ struct Registers {
 enum struct InstructionEnum : u8 {
     ADD, ADDHL, ADDC, SUB, SBC, AND, OR, XOR, CP, INC, DEC, CCF, SCF, RRA, RLA, RRCA, RLCA, CPL, BIT,
     RESET, SET, SRL, RR, RL, RRC, RLC, SRA, SLA, SWAP,
-    JP,
+    JP, JR, JPI,
 };
 
 enum struct ArithmeticTarget : u8 {
@@ -147,6 +147,8 @@ struct SRA : Instruction { SRA(ArithmeticTarget target) : Instruction(Instructio
 struct SLA : Instruction { SLA(ArithmeticTarget target) : Instruction(InstructionEnum::SLA, target) {} };
 struct SWAP : Instruction { SWAP(ArithmeticTarget target) : Instruction(InstructionEnum::SWAP, target) {} };
 struct JP : Instruction { JP(JumpTest test) : Instruction(InstructionEnum::JP, test) {} };
+struct JR : Instruction { JR(JumpTest test) : Instruction(InstructionEnum::JR, test) {} };
+struct JPI : Instruction { JPI(JumpTest test) : Instruction(InstructionEnum::JPI, test) {} };
 
 struct MemoryBus {
     std::array<u8, 0xFFFF> memory;
@@ -2138,6 +2140,11 @@ u16 CPU::execute(Instruction instruction) {
                             break;
     }
     break;
+    case InstructionEnum::JR:
+    {
+
+    }
+    break;
 
     return pc += 1;
     }
@@ -2353,6 +2360,21 @@ std::optional<Instruction> Instruction::from_byte_not_prefixed(u8 byte) {
 
     case 0x2F:
         return CPL();
+
+    case 0xC2:
+        return JP(JumpTest::NotZero);
+
+    case 0xD2:
+        return JP(JumpTest::NotCarry);
+
+    case 0xCA:
+        return JP(JumpTest::Zero);
+
+    case 0xDA:
+        return JP(JumpTest::Carry);
+
+    case 0xC3:
+        return JP(JumpTest::Always);
     }
 
     return std::nullopt;
