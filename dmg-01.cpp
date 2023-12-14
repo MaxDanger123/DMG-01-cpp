@@ -7,7 +7,7 @@
 #include "SafeInt.hpp"
 
 using u8 = uint8_t;
-using s8 = int8_t;
+using i8 = int8_t;
 using u16 = uint16_t;
 
 namespace consts {
@@ -86,7 +86,7 @@ struct Registers {
 enum struct InstructionEnum : u8 {
     ADD, ADDHL, ADDC, SUB, SBC, AND, OR, XOR, CP, INC, DEC, CCF, SCF, RRA, RLA, RRCA, RLCA, CPL, BIT,
     RESET, SET, SRL, RR, RL, RRC, RLC, SRA, SLA, SWAP,
-    JP, JR, JPI,
+    JP, JR, JP_HL,
 };
 
 enum struct ArithmeticTarget : u8 {
@@ -147,9 +147,10 @@ struct RLC : Instruction { RLC(ArithmeticTarget target) : Instruction(Instructio
 struct SRA : Instruction { SRA(ArithmeticTarget target) : Instruction(InstructionEnum::SRA, target) {} };
 struct SLA : Instruction { SLA(ArithmeticTarget target) : Instruction(InstructionEnum::SLA, target) {} };
 struct SWAP : Instruction { SWAP(ArithmeticTarget target) : Instruction(InstructionEnum::SWAP, target) {} };
+
 struct JP : Instruction { JP(JumpTest test) : Instruction(InstructionEnum::JP, test) {} };
 struct JR : Instruction { JR(JumpTest test) : Instruction(InstructionEnum::JR, test) {} };
-struct JPI : Instruction { JPI(JumpTest test) : Instruction(InstructionEnum::JPI, test) {} };
+struct JP_HL : Instruction { JP_HL() : Instruction(InstructionEnum::JP_HL) {} };
 
 struct MemoryBus {
     std::array<u8, 0xFFFF> memory;
@@ -199,6 +200,7 @@ struct CPU {
 
     u16 jump(bool should_jump);
     u16 jr(bool should_jump);
+    u16 jp_hl();
 };
 
 u8 CPU::add(u8 value) {
@@ -572,13 +574,17 @@ u16 CPU::jump(bool should_jump) {
 
 u16 CPU::jr(bool should_jump) {
     if (should_jump) {
-        auto offset = static_cast<s8>(bus.read_byte(pc + 1));
+        auto offset = static_cast<i8>(bus.read_byte(pc + 1));
         u16 res = pc + offset;
         return res;
     }
     else {
         SafeAdd(pc, static_cast<u16>(2), pc);
     }
+}
+
+u16 CPU::jp_hl() {
+    return registers.HL.get();
 }
 
 u16 CPU::execute(Instruction instruction) {
@@ -2183,6 +2189,10 @@ u16 CPU::execute(Instruction instruction) {
         break;
     }
     break;
+    case InstructionEnum::JP_HL:
+    {
+        return jp_hl();
+    }
 
     return pc += 1;
     }
@@ -2428,6 +2438,9 @@ std::optional<Instruction> Instruction::from_byte_not_prefixed(u8 byte) {
 
     case 0x18:
         return JR(JumpTest::Always);
+
+    case 0xE9:
+        return JP_HL();
     }
 
     return std::nullopt;
